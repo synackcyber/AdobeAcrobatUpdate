@@ -1,7 +1,8 @@
-## Parameter set in Ninja-RMM
-
 ## Set Version Parameters
 param ([string]$RequiredVersion = '')
+
+## RegEx to remove periods from version. 
+$RequiredVersionStrip = $RequiredVersion -replace '[.]'
 
 ## For Testing only
 #$RequiredVersion = '22.003.20263'
@@ -13,13 +14,14 @@ if ($RequiredVersion -eq '')
     break 
 }
 
-## RegEx to remove periods from version. 
-
-$RequiredVersionStrip = $RequiredVersion -replace '[.]'
+Write-Host ""
+Write-Host "============================="
+Write-Host ""
 
 ## Check Access to FileServer
 
 $path = "\\punto\Apps\Adobe\"
+
 $accesscondition = Test-Path -Path $path
 if ( $accesscondition )
 {
@@ -30,9 +32,14 @@ if ( $accesscondition )
         exit
     }
 
+Write-Host ""
+Write-Host "============================="
+Write-Host ""
+
 ## Check Access to SCUT
 
 $scutpath = "C:\scut\Adobe"
+
 $accesscondition = Test-Path -Path $scutpath
 if ( $accesscondition )
 {
@@ -45,10 +52,15 @@ if ( $accesscondition )
         cd $scutpath
     }
 
+Write-Host ""
+Write-Host "============================="
+Write-Host ""
+
 
 ## Check for existing msp files before downloading
 
 $mspfiletest = "\\punto\Apps\Adobe\"+"*"+"$RequiredVersionStrip"+".msp"
+
 $accesscondition = Test-Path -Path $mspfiletest
 if ( $accesscondition )
 {
@@ -61,6 +73,10 @@ if ( $accesscondition )
         #$req.Links | Where-Object {$_.href -like "*.msp"} | Select -ExpandProperty href
         #Start-BitsTransfer -Source $req -Destination \\punto\Apps\Adobe\
        }
+
+Write-Host ""
+Write-Host "============================="
+Write-Host ""
 
 ## Get installed Adobe Products
 
@@ -91,6 +107,7 @@ $CheckVersionAcrobatReader32DC = $AdobeAcrobatReaderDCVersion -ge $RequiredVersi
 $AbobeAcrobatversion = Get-WmiObject -Class Win32_Product | Where-Object Name -eq 'Adobe Acrobat' | Select-Object Version | Select-Object -ExpandProperty Version
 $CheckVersionAcrobat = $AbobeAcrobatversion -ge $RequiredVersion
 
+
 ## Adobe Acrobat 64 bit Update
 
 if ($null -eq $AdobeAcrobat64bit ) {
@@ -105,6 +122,9 @@ if ($null -eq $AdobeAcrobat64bit ) {
                     msiexec.exe /p "AcrobatDCx64Upd$requiredversionstrip.msp" /qn
               }
 
+Write-Host ""
+Write-Host "_____________________________"
+Write-Host ""
 
 ## Abobe Acrobat DC 64-bit
 
@@ -120,6 +140,10 @@ if ($null -eq $AdobeAcrobatDC64bit ) {
                     msiexec.exe /p "AcrobatDCx64Upd$requiredversionstrip.msp" /qn               
               }
 
+Write-Host ""
+Write-Host "_____________________________"
+Write-Host ""
+
 ## Adobe Acrobat Reader
 
 if ($null -eq $AdobeAcrobatReader ) {
@@ -133,6 +157,10 @@ if ($null -eq $AdobeAcrobatReader ) {
                     cp $path"AcroRdrDCUpd"$requiredversionstrip".msp"
                     msiexec.exe /p "AcroRdrDCUpd$requiredversionstrip.msp" /qn
               }
+
+Write-Host ""
+Write-Host "_____________________________"
+Write-Host ""
 
 ## Adobe Acrobat Reader DC
 
@@ -148,6 +176,10 @@ if ($null -eq $AdobeAcrobatReaderDC ) {
                     msiexec.exe /p "AcroRdrDCUpd$requiredversionstrip.msp" /qn
               }
 
+Write-Host ""
+Write-Host "_____________________________"
+Write-Host ""
+
 ## Adobe Acrobat
 
 if ($null -eq $AdobeAcrobat ) {
@@ -162,9 +194,18 @@ if ($null -eq $AdobeAcrobat ) {
                     msiexec.exe /p "AcrobatDCUpd$requiredversionstrip.msp" /qn
               }
 
+Write-Host ""
+Write-Host "_____________________________"
+Write-Host ""
+
+Write-Host ""
+Write-Host "============================="
+Write-Host ""
+
 ## Standby for install to complete
- 
-Start-Sleep -Seconds 300
+
+Write-Host "Installing Application and cleaning up files. This can take up to 5 minutes" 
+Start-Sleep -Seconds 360
 
 ## Cleanup scut Folder
 
@@ -173,19 +214,39 @@ Remove-Item $scutpath -Force -Recurse
 
 ## Display Current Versions of Adobe
 
+Write-Host ""
+Write-Host "============================="
+Write-Host "+++++++++++++++++++++++++++++"
+Write-Host "============================="
+Write-Host ""
+
 Write-Host "Current Adobe Acrobat (64-bit) Version"
 Get-WmiObject -Class Win32_Product | Where-Object Name -eq 'Adobe Acrobat (64-bit)' | Select-Object -ExpandProperty Version
+Write-Host "_____________________________"
+Write-Host ""
 
 Write-Host "Current Adobe Acrobat DC 64-bit Version"
 Get-WmiObject -Class Win32_Product | Where-Object Name -eq 'Adobe Acrobat DC 64-bit)' | Select-Object Version | Select-Object -ExpandProperty Version
+Write-Host "_____________________________"
+Write-Host ""
 
 Write-Host "Current Adobe Acrobat Reader Version"
 Get-WmiObject -Class Win32_Product | Where-Object Name -eq 'Adobe Acrobat Reader' | Select-Object Version | Select-Object -ExpandProperty Version
+Write-Host "_____________________________"
+Write-Host ""
 
 Write-Host "Current Adobe Acrobat Reader DC Version"
 Get-WmiObject -Class Win32_Product | Where-Object Name -eq 'Adobe Acrobat Reader DC' | Select-Object Version | Select-Object -ExpandProperty Version
+Write-Host "_____________________________"
+Write-Host ""
 
 Write-Host "Current Adobe Acrobat Version"
 Get-WmiObject -Class Win32_Product | Where-Object Name -eq 'Adobe Acrobat' | Select-Object Version | Select-Object -ExpandProperty Version
+Write-Host ""
 
+Write-Host ""
+Write-Host "============================="
+Write-Host "+++++++++++++++++++++++++++++"
+Write-Host "============================="
+Write-Host ""
 Write-Host "Update Complete"
