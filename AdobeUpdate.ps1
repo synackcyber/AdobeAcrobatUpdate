@@ -36,6 +36,10 @@ Write-Host ""
 Write-Host "============================="
 Write-Host ""
 
+## Cleanup path
+
+$cleanupPath = "C:\scut"
+
 ## Check Access to SCUT
 
 $scutpath = "C:\scut\Adobe"
@@ -210,7 +214,7 @@ Start-Sleep -Seconds 360
 ## Cleanup scut Folder
 
 cd C:\
-Remove-Item $scutpath -Force -Recurse
+Remove-Item $cleanupPath -Force -Recurse
 
 ## Display Current Versions of Adobe
 
